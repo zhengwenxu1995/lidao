@@ -1,0 +1,150 @@
+<template>
+  <div class="echart-box">
+    <div class="order-wrapper">
+      <div class="echart-title">订单数据</div>
+      <el-row :gutter="30">
+        <el-col :span="8">
+          <el-card class="box-card">
+            <div slot="header" class="card-title">
+              <span>今日</span>
+              <el-date-picker
+                v-model="order.date"
+                type="date"
+                format="yyyy年MM月dd日"
+                placeholder="选择日期">
+              </el-date-picker>
+            </div>
+            <div class="card-main" ref="orderDay"></div>
+            <div class="card-total">
+              <span>总订单量：</span>
+              <span class="count-num">{{order.countDay}}</span>
+            </div>
+          </el-card>
+        </el-col>
+        <el-col :span="8">
+          <el-card class="box-card">
+            <div slot="header" class="card-title">
+              <span>本周</span>
+              <el-date-picker
+                v-model="order.week"
+                type="week"
+                format="yyyy年MM月dd日 ~ yyyy年MM月dd日"
+                placeholder="选择周">
+              </el-date-picker>
+            </div>
+            <div class="card-main" ref="orderWeek"></div>
+            <div class="card-total">
+              <span>总订单量：</span>
+              <span class="count-num">{{order.countWeek}}</span>
+            </div>
+          </el-card>
+        </el-col>
+        <el-col :span="8">
+          <el-card class="box-card">
+            <div slot="header" class="card-title">
+              <span>本月</span>
+              <el-date-picker
+                v-model="order.month"
+                type="month"
+                format="yyyy年MM月"
+                placeholder="选择月">
+              </el-date-picker>
+            </div>
+            <div class="card-main" ref="orderMonth"></div>
+            <div class="card-total">
+              <span>总订单量：</span>
+              <span class="count-num">{{order.countMonth}}</span>
+            </div>
+          </el-card>
+        </el-col>
+      </el-row>
+    </div>
+    <div class="trade-wrapper">
+      <div class="echart-title">交易数据</div>
+    </div>
+    <div class="buy-wrapper">
+      <div class="echart-title">购买数据</div>
+    </div>
+  </div>
+</template>
+
+<script>
+import Echarts from 'echarts';
+export default {
+  data () {
+    return {
+      date: new Date(),
+      order: {
+        date: '',
+        week: '',
+        month: '',
+        countDay: '80',
+        countWeek: '600',
+        countMonth: '1600'
+      }
+    };
+  },
+  created () {
+    var date = new Date();
+    this.order.data = this.toolClass.dateFtt('yyyy-MM-dd', date);
+    var sevenDay = 1000 * 60 * 60 * 24 * 7;
+    var time = date.getTime() + sevenDay;
+    this.order.week = this.toolClass.dateFtt('yyyy-MM-dd', date) + '~' + this.toolClass.dateFtt('yyyy-MM-dd', new Date(time));
+    this.order.month = this.toolClass.dateFtt('yyyy-MM', date);
+    console.log(this.order.data, this.order.week, this.order.month);
+    // this.initEchart();
+  },
+  methods: {
+    initEchart () {
+      Echarts.init(document.getElementById('orderWeek')).setOption({
+        series: {
+          type: 'pie',
+          data: [
+            {name: 'A', value: 1212},
+            {name: 'B', value: 2323},
+            {name: 'C', value: 1919}
+          ]
+        }
+      });
+    }
+  }
+};
+</script>
+
+<style scoped>
+  .echart-title{
+    margin-bottom: 20px;
+    font-size: 16px;
+    color: #333;
+    font-weight: bold;
+  }
+
+  .card-title {
+    font-size: 16px;
+    color: #333;
+    font-weight: bold;
+    display: flex;
+    line-height: 40px;
+  }
+
+  .card-title .el-date-editor{
+    flex: 1;
+  }
+
+  .card-total{
+    font-size: 16px;
+    color: #333;
+  }
+
+  .count-num{
+    color: #2182f8;
+    font-weight: bold;
+  }
+</style>
+<style>
+  .echart-box .el-input__inner{
+    border: none;
+    padding-right: 0;
+    color: #999;
+  }
+</style>

@@ -1,0 +1,249 @@
+<template>
+  <div class="activation-code">
+    <el-row :gutter="10">
+      <el-col :span="5">
+        <el-card class="btn-box" shadow = 'never'>
+          <btns :btns = 'batchBtns'
+          @createBatch = 'createBatch'
+          @cancelBatch = 'cancelBatch'
+          ></btns>
+        </el-card>
+        <el-card class="box-card" shadow = 'never'>
+          <div class="product-head">
+            <span>商品列表</span>
+          </div>
+          <ul class="product-list">
+            <li class="product-item" v-for="(pItem, pIndex) in productData" :key="pIndex">
+              <div class="procuct-info clearfix">
+                <div class="pro-img">
+                  <img :src="pItem.avatar" alt="" class="img-center">
+                </div>
+                <div class="pro-info">
+                  <p class="pro-title">{{pItem.title}}</p>
+                  <p class="pro-desc">{{pItem.title}}</p>
+                  <p class="pro-time">{{pItem.lastTime}}</p>
+                </div>
+              </div>
+              <div class="product-title">{{pItem.title}}</div>
+            </li>
+            <li class="empty-box" v-if="productData.length <= 0">暂无商品</li>
+          </ul>
+        </el-card>
+      </el-col>
+      <el-col :span="19">
+        <el-card class="btn-box" shadow = 'never'>
+         <btns :btns = 'codeBtns'
+          @createCode = 'createCode'
+          @cancelCode = 'cancelCode'
+          @delCode = 'delCode'
+          ></btns>
+        </el-card>
+        <el-card class="box-card" shadow = 'never'>
+          <div slot="header">
+            <select-search :config='selectSearchConfig'></select-search>
+          </div>
+          <div class="table-box">
+            <my-table
+            :config='tableConfig'
+            :tableData='tableData'
+            @handleSizeChange='handleSizeChange'
+            @handleCurrentChange='handleCurrentChange'
+            @getData='getData'></my-table>
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
+  </div>
+</template>
+
+<script>
+import Data from "../test/test.js";
+import selectSearch from "../common/selectSearch/selectSearch";
+import myTable from "../common/table/table";
+import btns from "../common/btns/btns";
+export default {
+  data () {
+    return {
+      selectSearchConfig: {
+        isSearch: true,
+        isSelect: false,
+        isButton: true,
+        btnText: '导出表',
+        searchPlaceholder: '请输入',
+        searchValue: ''
+      },
+      tableConfig: {
+        tableHeaders: [
+          {
+            fixed: true,
+            prop: 'reply',
+            label: '关注数',
+            width: '150'
+          },
+          {
+            prop: 'title',
+            label: '标题',
+            width: '300'
+          },
+          {
+            prop: 'href',
+            label: '图片',
+            width: '100',
+            isTemplate: true
+          },
+          {
+            prop: 'click',
+            label: '点击量',
+            width: '100'
+          },
+          {
+            fixed: true,
+            prop: 'author',
+            label: '创建者',
+            width: '100'
+          },
+          {
+            prop: 'avatar',
+            label: '头像',
+            width: '100',
+            isTemplate: true
+          },
+          {
+            prop: 'lastTime',
+            label: '最后登录时间',
+            width: '200'
+          }
+        ],
+        requestData: {
+          page: 1,
+          size: 10
+        }
+      },
+      batchBtns: [
+        {
+          title: '新建批次',
+          icon: require('../../assets/images/pd/ac-new.png'),
+          clickName: 'createBatch'
+        },
+        {
+          title: '作废批次',
+          icon: require('../../assets/images/pd/ac-del.png'),
+          clickName: 'cancelBatch'
+        }
+      ],
+      codeBtns: [
+        {
+          title: '创建激活码',
+          icon: require('../../assets/images/pd/ac-code.png'),
+          clickName: 'createCode'
+        },
+        {
+          title: '作废激活码',
+          icon: require('../../assets/images/pd/ac-so-code.png'),
+          clickName: 'cancelCode'
+        },
+        {
+          title: '删除激活码',
+          icon: require('../../assets/images/pd/ac-del-code.png'),
+          clickName: 'delCode'
+        }
+      ],
+      tableData: [],
+      productData: []
+    };
+  },
+  methods: {
+    getData () {
+      this.tableData = Data.data.slice(0, 10);
+      // this.productData = Data.data.slice(12,18);
+    },
+    createBatch () {
+      console.log('创建批次');
+    },
+    cancelBatch () {
+      console.log('作废批次');
+    },
+    createCode () {
+      console.log('创建激活码');
+    },
+    cancelCode () {
+      console.log('作废激活码');
+    },
+    delCode () {
+      console.log('删除激活码');
+    },
+    handleSizeChange(val) {
+      console.log(`每页 ${val} 条`);
+    },
+    handleCurrentChange(val) {
+      console.log(`当前页: ${val}`);
+    }
+  },
+  components: {
+    selectSearch,
+    myTable,
+    btns
+  }
+};
+</script>
+
+<style scoped>
+  .product-head{
+    margin: -20px -20px 0 -20px;
+    background: #2e8af3;
+    height: 30px;
+    line-height: 30px;
+    font-size: 14px;
+    color: #fff;
+    padding: 0 20px;
+  }
+
+  .product-list{
+    padding-top: 20px;
+    /* margin: 0 -10px -20px; */
+  }
+
+  .product-item{
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #dcdcdc;
+  }
+
+  .product-item:last-child{
+    border-bottom: none;
+  }
+
+  .pro-img{
+    width: 82px;
+    height: 110px;
+    float: left;
+    position: relative;
+  }
+
+  .pro-info{
+    padding-left: 90px;
+  }
+
+  .product-title{
+    margin-top: 6px;
+    font-size: 14px;
+    color: #333;
+  }
+
+  .pro-title{
+    font-weight: bold;
+    font-size: 14px;
+    color: #4a4a4a;
+  }
+
+  .pro-desc{
+    margin-top: 8px;
+    font-size: 12px;
+  }
+
+  .pro-time{
+    font-size: 12px;
+    color: #999;
+    margin-top: 10px;
+  }
+</style>

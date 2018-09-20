@@ -1,0 +1,162 @@
+<template>
+  <div class="distribution-page">
+    <el-card class="btn-box" shadow = 'never'>
+      <btns :btns = 'distributionBtns'
+      @createDistribution = 'createDistribution'
+      @editDistribution = 'editDistribution'
+      @delDistribution = 'delDistribution'
+      @manageDistribution = 'manageDistribution'
+      ></btns>
+    </el-card>
+    <el-card class="box-card" shadow = 'never'>
+      <div slot="header">
+          <select-search :config='selectSearchConfig'></select-search>
+      </div>
+      <div class="table-box">
+        <my-table
+        :config='tableConfig'
+        :tableData='tableData'
+        @handleSizeChange='handleSizeChange'
+        @handleCurrentChange='handleCurrentChange'
+        @getData='getData'></my-table>
+      </div>
+    </el-card>
+  </div>
+</template>
+
+<script>
+import Data from "../test/test.js";
+import selectSearch from "../common/selectSearch/selectSearch";
+import myTable from "../common/table/table";
+import btns from "../common/btns/btns";
+export default {
+  data () {
+    return {
+      selectSearchConfig: {
+        isSearch: true,
+        isSelect: true,
+        selectIndex: '',
+        searchPlaceholder: '请输入',
+        selectPlaceholder: '请选择',
+        searchValue: '',
+        selects: [
+          {
+            value: '0',
+            label: '默认'
+          },
+          {
+            value: '1',
+            label: '名称'
+          },
+          {
+            value: '2',
+            label: '日期'
+          }
+        ]
+      },
+      tableConfig: {
+        tableHeaders: [
+          {
+            fixed: true,
+            prop: 'reply',
+            label: '关注数',
+            width: '150'
+          },
+          {
+            prop: 'title',
+            label: '标题',
+            width: '300'
+          },
+          {
+            prop: 'href',
+            label: '图片',
+            width: '100',
+            isTemplate: true
+          },
+          {
+            prop: 'click',
+            label: '点击量',
+            width: '100'
+          },
+          {
+            fixed: true,
+            prop: 'author',
+            label: '创建者',
+            width: '100'
+          },
+          {
+            prop: 'avatar',
+            label: '头像',
+            width: '100',
+            isTemplate: true
+          },
+          {
+            prop: 'lastTime',
+            label: '最后登录时间',
+            width: '200'
+          }
+        ],
+        requestData: {
+          page: 1,
+          size: 10
+        }
+      },
+      tableData: [],
+      distributionBtns: [
+        {
+          title: '新建',
+          icon: require('../../assets/images/common/icon/ag-add.png'),
+          clickName: 'createDistribution'
+        },
+        {
+          title: '编辑',
+          icon: require('../../assets/images/common/icon/ag-edit.png'),
+          clickName: 'editDistribution'
+        },
+        {
+          title: '删除',
+          icon: require('../../assets/images/common/icon/ag-dele.png'),
+          clickName: 'delDistribution'
+        },
+        {
+          title: '机构管理',
+          icon: require('../../assets/images/common/icon/ag-pro.png'),
+          right: true,
+          clickName: 'manageDistribution'
+        }
+      ]
+    };
+  },
+  methods: {
+    getData () {
+      this.tableData = Data.data.slice(0, 10);
+    },
+    createDistribution () {
+      console.log('新建行为');
+    },
+    editDistribution () {
+      console.log('编辑行为');
+    },
+    delDistribution () {
+      console.log('删除行为');
+    },
+    manageDistribution () {
+      console.log('机构管理');
+    },
+    handleSizeChange(val) {
+      console.log(`每页 ${val} 条`);
+    },
+    handleCurrentChange(val) {
+      console.log(`当前页: ${val}`);
+    }
+  },
+  components: {
+    selectSearch,
+    myTable,
+    btns
+  }
+};
+</script>
+
+<style scoped>
+</style>

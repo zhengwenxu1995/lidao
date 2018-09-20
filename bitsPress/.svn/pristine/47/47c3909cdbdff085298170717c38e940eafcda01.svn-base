@@ -1,0 +1,405 @@
+<template>
+  <div class="indexPage">
+    <el-container style="height: 100%">
+      <el-header>
+        <Header></Header>
+      </el-header>
+      <el-container class="main-container">
+        <el-aside width="240px">
+          <div class="menuBox">
+            <div class="appInfo">
+              <div class="app-icon">
+                <img class="img-center" :src="appInfo.appIcon" alt="APP Logo">
+              </div>
+              <div class="app-name">
+                <span>{{appInfo.appName}}</span>
+                <i class="fa fa-pencil-square-o app-edit"  @click="editAppInfo" aria-hidden="true"></i>
+              </div>
+            </div>
+            <div class="menuCon">
+              <el-menu default-active="1"
+                class="menu"
+                @select='selectMenuFun'
+                @open="handleOpen"
+                @close="handleClose">
+                <div v-for="(item, index) in menuListData" :key ='index'>
+                  <el-submenu :index="item.index" v-if="item.child && item.child.length > 0">
+                    <template slot="title">
+                      <span>{{item.title}}</span>
+                    </template>
+                    <div v-for="(cItem, cIndex) in item.child" :key ='cIndex'>
+                      <el-submenu :index="cItem.index" v-if="cItem.child && cItem.child.length > 0">
+                        <span slot="title">{{cItem.title}}</span>
+                        <el-menu-item :index="citem.index" v-for="(citem, cindex) in cItem.child" :key ='cindex'><i class="fa" :class="citem.icon"></i>{{citem.title}}</el-menu-item>
+                      </el-submenu>
+                      <el-menu-item :index="cItem.index" v-else><i class="fa" :class="cItem.icon"></i>{{cItem.title}}</el-menu-item>
+                    </div>
+                  </el-submenu>
+                  <el-menu-item :index="item.index" v-else>
+                    <i class="fa" :class="item.icon"></i>
+                    <span slot="title">{{item.title}}</span>
+                  </el-menu-item>
+                </div>
+              </el-menu>
+            </div>
+          </div>
+        </el-aside>
+        <el-main>
+          <el-tabs v-model="indexContent" type="border-card" closable @tab-remove="removeTab" v-loading='showLoading'>
+            <el-tab-pane v-for="(item, index) in selectMenuList" :key="index" :label="item.title" :name="item.name"  >
+              <div :is='item.content' style="height:100%"></div>
+            </el-tab-pane>
+          </el-tabs>
+        </el-main>
+      </el-container>
+    </el-container>
+  </div>
+</template>
+
+<script>
+import Header from './common/header/header';
+import Footer from './common/footer/footer';
+export default {
+  name: 'index',
+  data () {
+    return {
+      showLoading: false,
+      appInfo: {
+        appIcon: require('../assets/images/com/lvs.png'),
+        appName: '开始的是'
+      },
+      menuListData: [
+        {
+          title: "总览",
+          index: "1",
+          component: 'echart',
+          icon: ""
+        },
+        {
+          title: "内容管理",
+          index: "2",
+          icon: "",
+          child: [
+            {
+              title: "内容",
+              index: "2-1",
+              component: 'test2',
+              icon: "fa-th-large"
+            },
+            {
+              title: "类型",
+              index: "2-2",
+              component: '',
+              icon: "fa-tags"
+            }
+          ]
+        },
+        {
+          title: "财务",
+          index: "3",
+          icon: "",
+          child: [
+            {
+              title: "订单",
+              index: "3-1",
+              component: 'order',
+              icon: "fa-clipboard"
+            },
+            {
+              title: "统计",
+              index: "3-2",
+              component: 'echart',
+              icon: "fa-bar-chart"
+            },
+            {
+              title: "提现审核",
+              index: "3-3",
+              component: '',
+              icon: "fa-check-circle"
+            }
+          ]
+        },
+        {
+          title: "运营",
+          index: "4",
+          icon: "",
+          child: [
+            {
+              title: "优惠券",
+              index: "4-1",
+              component: 'coupon',
+              icon: "fa-money"
+            },
+            {
+              title: "行为",
+              index: "4-2",
+              component: 'behavior',
+              icon: "fa-pie-chart"
+            },
+            {
+              title: "激活码",
+              index: "4-3",
+              component: 'activationCode',
+              icon: "fa-qrcode"
+            },
+            {
+              title: "分销",
+              index: "4-4",
+              component: 'distribution',
+              icon: "fa-cubes"
+            },
+            {
+              title: "分销商",
+              index: "4-5",
+              component: 'retailTrader',
+              icon: "fa-sitemap"
+            },
+            {
+              title: "活动",
+              index: "4-6",
+              component: 'activity',
+              icon: "fa-star"
+            }
+          ]
+        },
+        {
+          title: "社交",
+          index: "5",
+          icon: "",
+          child: [
+            {
+              title: "社群",
+              index: "5-1",
+              component: '',
+              icon: "fa-users"
+            },
+            {
+              title: "直播",
+              index: "5-2",
+              component: '',
+              icon: "fa-youtube-play"
+            },
+            {
+              title: "评论/留言",
+              index: "5-3",
+              component: '',
+              icon: "fa-pencil-square"
+            },
+            {
+              title: "微信设置",
+              index: "5-4",
+              component: '',
+              icon: "fa-cogs"
+            }
+          ]
+        },
+        {
+          title: "教育",
+          index: "6",
+          icon: "",
+          child: [
+            {
+              title: "组卷",
+              index: "6-1",
+              component: '',
+              icon: "fa-list-alt"
+            },
+            {
+              title: "百科问答",
+              index: "6-2",
+              component: '',
+              icon: "fa-commenting-o"
+            }
+          ]
+        },
+        {
+          title: "数据",
+          index: "7",
+          icon: "",
+          child: [
+            {
+              title: "用户",
+              index: "7-1",
+              component: '',
+              icon: "fa-user"
+            },
+            {
+              title: "统计",
+              index: "7-2",
+              component: '',
+              icon: "fa-database"
+            },
+            {
+              title: "平台管理",
+              index: "7-3",
+              component: '',
+              icon: "fa-sliders"
+            }
+          ]
+        },
+      ],
+      indexContent: '1',
+      selectMenuList: []
+    };
+  },
+  created () {
+    var indexItem = this.toolClass.getTreeDataItem(this.menuListData, 'index', this.indexContent);
+    this.addTab(indexItem);
+  },
+  methods: {
+    editAppInfo (res) {
+      console.log(res);
+    },
+    handleOpen (res) {
+      console.log(res);
+    },
+    handleClose (res) {
+      console.log(res);
+    },
+    addTab(indexItem) {
+      this.showLoading = true;
+      var that = this;
+      var newTabName = indexItem.component;
+      var title = indexItem.title;
+      var indexTag = indexItem.index;
+      var retRes = this.toolClass.isHave(this.selectMenuList, 'title', title);
+      if (!retRes) {
+        import('./' + newTabName + '/' + newTabName + '.vue').then(
+          res => {
+            that.selectMenuList.push({
+              title: title,
+              name: indexTag,
+              content: res.default
+            });
+            that.indexContent = indexTag;
+            that.showLoading = false;
+          }
+        );
+      } else {
+        this.indexContent = indexTag;
+        this.showLoading = false;
+      }
+    },
+    removeTab(targetName) {
+      let tabs = this.selectMenuList;
+      let activeName = this.indexContent;
+      if (activeName === targetName) {
+        tabs.forEach((tab, index) => {
+          if (tab.name === targetName) {
+            let nextTab = tabs[index + 1] || tabs[index - 1];
+            if (nextTab) {
+              activeName = nextTab.name;
+            }
+          }
+        });
+      }
+      this.indexContent = activeName;
+      this.selectMenuList = tabs.filter(tab => tab.name !== targetName);
+    },
+    selectMenuFun (res) {
+      var indexItem = this.toolClass.getTreeDataItem(this.menuListData, 'index', res);
+      this.addTab(indexItem);
+    }
+  },
+  components: {
+    Header: Header,
+    Footer: Footer
+  }
+};
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped>
+  .indexPage{
+    width: 100%;
+    height: 100%;
+  }
+
+  .menuBox{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .appInfo{
+    width: 100%;
+    height: 210px;
+    text-align: center;
+    border-right: solid 1px #e6e6e6;
+    border-bottom: solid 1px #e6e6e6;
+  }
+
+  .app-icon{
+    width: 88px;
+    height: 88px;
+    margin:40px auto 9px;
+    position: relative;
+  }
+
+  .app-name{
+    line-height: 16px;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  .app-edit{
+    color: #2182f8;
+    vertical-align: top;
+    font-size: 18px;
+    margin-left: 9px;
+    cursor: pointer;
+    line-height: 1.5;
+  }
+
+  .menuCon{
+    flex: 1;
+    overflow: auto;
+  }
+
+  .menu{
+    min-height: 100%;
+  }
+
+  .menu i{
+    font-size: 18px;
+    margin-right: 6px;
+  }
+
+  .el-tabs{
+    height: 100%;
+    position: relative;
+  }
+</style>
+
+<style>
+  .main-container .el-tabs__header{
+    position: absolute;
+    left: 0;
+    top: 0;
+    width:100%;
+    z-index: 9999;
+  }
+
+  .main-container .el-tabs__content{
+    padding-top: 39px;
+    height: 100%;
+    box-sizing: border-box;
+    overflow-y: auto;
+    /* position: relative; */
+    background: #eee;
+  }
+
+  .indexPage .el-header{
+    padding: 0;
+  }
+
+  .el-menu-item.is-active{
+    color: #ffffff;
+    background: #409eff;
+  }
+
+  .main-container .el-tab-pane{
+    margin-top: 16px;
+  }
+</style>

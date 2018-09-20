@@ -1,0 +1,425 @@
+<template>
+  <div id="appinfo">
+    <el-container>
+      <el-header class="no-padding"><my-head></my-head></el-header>
+      <el-container>
+        <el-aside width="320px" class="app-aside">
+          <div class="agency-box">
+            <div class="aside-title">
+              <p>机构信息</p>
+            </div>
+            <div class="agency-wrapper">
+              <div class="agency-icon">
+                <img class="img-center" :src="agencyInfo.agencyIcon" alt="机构 Logo">
+              </div>
+              <div class="agency-name">
+                <span>{{agencyInfo.agencyName}}</span>
+                <i class="fa fa-pencil-square-o agency-edit"  @click="editAgencyInfo" aria-hidden="true"></i>
+              </div>
+            </div>
+          </div>
+          <div class="shop-box">
+            <div>
+              <div class="aside-title">
+                <p>购买版本</p>
+              </div>
+              <div class="shop-wrapper clearfix">
+                <span>{{agencyInfo.versionName}}</span>
+                <el-button type="primary" class="shop-btn fr upgrade-btn" round>立刻升级</el-button>
+              </div>
+            </div>
+            <div>
+              <div class="aside-title">
+                <p>有效期限</p>
+              </div>
+              <div class="shop-wrapper clearfix">
+                <span>{{agencyInfo.expirationDate}}</span>
+                <el-button type="primary" class="shop-btn fr renew-btn" plain round>续费</el-button>
+              </div>
+            </div>
+          </div>
+          <div class="tips-box">
+            <div class="aside-title">
+              <p>小贴士</p>
+            </div>
+            <div class="tip-msg">
+              <p>{{agencyInfo.tipMsg}}</p>
+            </div>
+          </div>
+        </el-aside>
+        <el-main>
+          <div class="main-box">
+            <div class="app-box">
+              <div class="main-title clearfix">
+                <h4 class="fl">我的应用</h4>
+                <el-button type="primary" class="fr build-btn" round @click="newBuildApp">新建应用</el-button>
+              </div>
+              <ul class="app-wrapper clearfix">
+                <li class="app-item fl" v-for="(item, index) in appList" :key="index">
+                  <div class="app-img">
+                    <img :src="item.img" alt="" class="img-center">
+                  </div>
+                  <div class="app-name text-ellipsis">{{item.name}}</div>
+                </li>
+                <li class="app-item fl" @click="newBuildApp">
+                  <div class="app-img">
+                    <img src="../../assets/images/com/info-02.png" alt="" class="img-center">
+                  </div>
+                  <div class="app-name">添加新的应用</div>
+                </li>
+              </ul>
+            </div>
+            <div class="app-box">
+              <div class="main-title clearfix">
+                <h4 class="fl">我的工具</h4>
+              </div>
+              <ul class="app-wrapper clearfix">
+                <li class="app-item fl" v-for="(item, index) in toolList" :key="index">
+                  <div class="app-img">
+                    <img :src="item.img" alt="" class="img-center">
+                  </div>
+                  <div class="app-name text-ellipsis">{{item.name}}</div>
+                </li>
+              </ul>
+            </div>
+            <div class="app-box">
+              <div class="main-title clearfix">
+                <h4 class="fl">广告和建议</h4>
+              </div>
+              <ul class="app-wrapper clearfix">
+                <li class="app-item fl" v-for="(item, index) in adList" :key="index">
+                  <div class="app-img">
+                    <img :src="item.img" alt="" class="img-center">
+                  </div>
+                  <div class="app-name text-ellipsis">{{item.name}}</div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </el-main>
+      </el-container>
+    </el-container>
+
+    <!-- 新建 修改 机构信息 -->
+    <el-dialog
+      :title="appDialog.dialogTitle"
+      :visible.sync="appDialog.dialogVisible"
+      :before-close = 'beforeCloseDialog'
+      width="600px">
+      <el-form ref="appForm" :model="appDialog.appForm" :rules="appDialog.rules" label-width="80px">
+        <el-form-item label="机构" prop="name">
+          <el-input v-model="appDialog.appForm.name" placeholder="请输入机构名称" :disabled = 'appDialog.titleDisabled'></el-input>
+        </el-form-item>
+        <el-form-item label="描述">
+          <el-input type="textarea" :autosize="{ minRows: 4, maxRows: 8}" v-model="appDialog.appForm.description" placeholder="请输入描述"></el-input>
+        </el-form-item>
+        <el-form-item label="图标">
+          <el-upload action="https://jsonplaceholder.typicode.com/posts/"
+            list-type="picture-card"
+            :limit="appDialog.upLaodLimit"
+            :file-list="fileList"
+            :on-preview="handlePictureCardPreview"
+            :on-remove="handleRemove"
+            :on-success="agencyFromSuccess"
+            :before-upload="beforeAgencyFrom">
+            <img class="avatar" v-if="appDialog.appForm.icon" :src=" appDialog.appForm.icon" >
+            <i v-else class="avatar-uploader-icon el-icon-plus "></i>
+          </el-upload>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="appDialog.dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="submitAgencyInfo">确 定</el-button>
+      </span>
+      <el-dialog title="图片预览"
+        :visible.sync="appDialog.previewDialogVisible"
+        append-to-body>
+        <img width="100%" :src="appDialog.previewImgUrl" alt="">
+      </el-dialog>
+    </el-dialog>
+  </div>
+</template>
+<script>
+import myHead from '@/components/common/header/header';
+// import defaultImg from '../../assets/images/com/lvs.png';
+export default {
+  data () {
+    return {
+      agencyInfo: {
+        expirationDate: '2018-01-01',
+        versionName: '数字出版基础版',
+        agencyName: '旅游教育出版社',
+        agencyIcon: require('../../assets/images/com/lvs.png'),
+        agencyDesc: '我是导游',
+        tipMsg: '你知道吗，比特出版可以和DPS5数据互通，DPS5数据可以轻松在比特出版中灵活使用。只需要通过类型管理面板中建立类型之间的关联关系，即可以在新建资源的时候轻松导入DPS5数据。'
+      },
+      fileList: [
+        {
+          name: "",
+          url: 'https://i01piccdn.sogoucdn.com/1cb1e919a4dbafed'
+        }
+      ],
+      appDialog: {
+        dialogTitle: '',
+        titleLabel: '',
+        titlePlaceholder: '',
+        titleDisabled: false,
+        dialogVisible: false,
+        upLaodLimit: 1,
+        previewDialogVisible: false,
+        previewImgUrl: '',
+        appForm: {
+          name: '',
+          icon: '',
+          description: ''
+        },
+        rules: {
+          name: [
+            {required: true, message: '请输入APP名称', trigger: 'blur'},
+            {min: 2, max: 8, message: '长度在 2 到 10 个字符', trigger: 'blur'}
+          ]
+        }
+      },
+      appList: [
+        {
+          img: 'https://i01piccdn.sogoucdn.com/1cb1e919a4dbafed',
+          name: '旅游'
+        },
+        {
+          img: 'https://i01piccdn.sogoucdn.com/24555ba85f4adc5d',
+          name: '轻松'
+        },
+        {
+          img: 'https://i01piccdn.sogoucdn.com/416cb4e184432673',
+          name: '灵活'
+        },
+        {
+          img: 'https://i03piccdn.sogoucdn.com/00c3371330b1fa9b',
+          name: '管理'
+        },
+        {
+          img: 'https://i01piccdn.sogoucdn.com/24555ba85f4adc5d',
+          name: '轻松'
+        },
+        {
+          img: 'https://i01piccdn.sogoucdn.com/416cb4e184432673',
+          name: '灵活'
+        },
+        {
+          img: 'https://i03piccdn.sogoucdn.com/00c3371330b1fa9b',
+          name: '管理'
+        }
+      ],
+      toolList: [
+        {
+          img: 'https://i03piccdn.sogoucdn.com/81331550b0e1f531',
+          name: '自动邮件系统'
+        },
+        {
+          img: 'https://i04piccdn.sogoucdn.com/210da1a8e0f5fe56',
+          name: '权限管理'
+        },
+        {
+          img: 'https://i01piccdn.sogoucdn.com/ec209a0670c21bce',
+          name: '头条推广服务'
+        }
+      ],
+      adList: [
+        {}
+      ]
+    };
+  },
+  created () {
+    console.log('AgencyInfo');
+  },
+  methods: {
+    editAgencyInfo () {
+      this.appDialog.dialogTitle = '修改机构信息';
+      this.appDialog.titleLabel = '机构';
+      this.appDialog.titlePlaceholder = '请输入机构名称';
+      this.appDialog.titleDisabled = true;
+      this.appDialog.appForm.name = this.agencyInfo.agencyName;
+      this.appDialog.appForm.icon = this.agencyInfo.agencyIcon;
+      this.appDialog.appForm.description = this.agencyInfo.agencyDesc;
+      this.appDialog.dialogVisible = true;
+    },
+    beforeAgencyFrom (res) {
+      console.log('beforeform', res);
+    },
+    agencyFromSuccess (res) {
+      console.log('Success', res);
+    },
+    submitAgencyInfo (res) {
+      console.log('submit', res);
+    },
+    handleRemove(file, fileList) {
+      console.log('remove', file);
+    },
+    handlePictureCardPreview(file) {
+      console.log('Preview', file);
+      this.appDialog.previewImgUrl = file.url;
+      this.appDialog.previewDialogVisible = true;
+    },
+    beforeCloseDialog () {
+      this.$refs.appForm.resetFields();
+      this.appDialog.dialogVisible = false;
+    },
+    newBuildApp () {
+      this.appDialog.dialogTitle = '创建 App';
+      this.appDialog.titleLabel = '名称';
+      this.appDialog.titlePlaceholder = '请输入名称';
+      this.appDialog.titleDisabled = false;
+      this.appDialog.appForm.name = '';
+      this.appDialog.appForm.icon = '';
+      this.appDialog.appForm.description = '';
+      this.appDialog.dialogVisible = true;
+    }
+  },
+  components: {
+    myHead
+  }
+};
+</script>
+
+<style scoped>
+  #appinfo, .el-container{
+    height: 100%;
+  }
+
+  .app-aside{
+    padding: 20px;
+    border-right: 1px solid #dcdcdc;
+  }
+  /* 机构信息 */
+  .agency-box{
+    padding-right: 8px;
+    margin-bottom: 20px;
+  }
+
+  .aside-title{
+    padding-top: 9px;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+
+  .agency-wrapper{
+    padding: 13px 0 20px;
+    border: 1px solid #dcdcdc;
+    text-align: center;
+  }
+
+  .agency-icon{
+    width: 88px;
+    height: 88px;
+    margin:0 auto 9px;
+    position: relative;
+  }
+
+  .agency-name{
+    line-height: 16px;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  .agency-edit{
+    color: #2182f8;
+    vertical-align: top;
+    font-size: 18px;
+    margin-left: 9px;
+    cursor: pointer;
+    line-height: 1.5;
+  }
+  /* 购买--- 续费*/
+  .shop-box{
+    padding-bottom: 10px;
+    margin-bottom: 30px;
+    border-bottom: 1px solid #dcdcdc;
+  }
+
+  .shop-wrapper{
+    line-height: 30px;
+    font-size: 16px;
+    color: #2182f8;
+    margin-bottom: 30px;
+  }
+
+  .shop-btn{
+    height: 30px;
+    width: 80px;
+    padding: 0;
+  }
+
+  .upgrade-btn,.renew-btn:hover{
+    background: #2182f8;
+    color: #fff;
+    box-sizing: border-box;
+  }
+
+  .renew-btn{
+    background: #fff;
+    color: #3899ec;
+    border-color: #3899ec;
+  }
+  /* 小贴士 */
+  .tip-msg{
+    font-size: 16px;
+    line-height: 1.5;
+    color: #666;
+    text-align: justify;
+    padding: 10px 0;
+  }
+
+  .main-box{
+    padding: 20px;
+  }
+  /* 我的应用  */
+  .main-title{
+    font-size: 16px;
+    line-height: 40px;
+    color: #333;
+    margin-bottom: 7px;
+  }
+
+  .main-title h4{
+    font-weight: bold;
+  }
+
+  .app-wrapper{
+    margin-left: -15px;
+    margin-right: -15px;
+  }
+
+  .app-item{
+    margin: 0 15px 15px;
+    width: 200px;
+    height: 200px;
+    text-align: center;
+    background: #fff;
+    border-radius: 5px;
+    box-shadow: 0 0 4px 0 rgba(220,220,220,0.35);
+  }
+
+  .app-img{
+    margin: 38px auto 26px;
+    width: 80px;
+    height: 80px;
+    position: relative;
+  }
+
+  .app-name{
+    font-size: 18px;
+    color: #333;
+    padding: 0 10px;
+  }
+</style>
+<style>
+  #appinfo .el-dialog__body{
+    border-top: 1px solid #dcdcdc;
+    border-bottom: 1px solid #dcdcdc;
+  }
+
+  #appinfo .el-dialog__header, #appinfo .el-dialog__footer{
+    padding: 20px;
+  }
+</style>

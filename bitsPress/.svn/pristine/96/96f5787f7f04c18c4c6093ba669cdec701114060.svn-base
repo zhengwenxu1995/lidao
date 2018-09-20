@@ -1,0 +1,106 @@
+<template>
+  <div class="table-wrapper">
+    <el-table
+      :data="tableData"
+      border
+      header-cell-class-name='table-header grey-background'
+      cell-class-name='tc'
+      style="width: 100%"
+      header-row-class-name='grey-background'
+      >
+      <div v-for="(tItem, tIndex) in config.tableHeaders" :key="tIndex">
+        <el-table-column
+          v-if = "!tItem.isTemplate"
+          :fixed = 'tItem.fixed'
+          :prop = 'tItem.prop'
+          :label = 'tItem.label'
+          :width = 'tItem.fixed'>
+        </el-table-column>
+        <el-table-column
+          v-else
+          :fixed = 'tItem.fixed'
+          :label = 'tItem.label'
+          :width = 'tItem.fixed'>
+          <template slot-scope="scope">
+            <div class="table-img">
+              <img :src="scope.row[tItem.prop]" class="img-center" alt="">
+            </div>
+          </template>
+        </el-table-column>
+      </div>
+    </el-table>
+    <div class="card-footer clearfix">
+      <el-pagination
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="config.requestData.page"
+        :page-sizes="pageSizes"
+        :page-size="config.requestData.size"
+        layout="total, sizes, prev, pager, next, jumper"
+        class="fr"
+        :total="totalPage">
+      </el-pagination>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  props: {
+    config: {
+      type: Object,
+      default () {
+        return {};
+      }
+    },
+    tableData: {
+      type: Array,
+      default () {
+        return [];
+      }
+    }
+  },
+  data () {
+    return {
+      pageSizes: [10, 20, 30, 40],
+      totalPage: 10
+    };
+  },
+  created () {
+    this.getData();
+  },
+  methods: {
+    getData () {
+      this.$emit('getData');
+    },
+    handleSizeChange (e) {
+      this.$emit('handleSizeChange', e);
+    },
+    handleCurrentChange (e) {
+      this.$emit('handleCurrentChange', e);
+    }
+  }
+};
+</script>
+<style scoped>
+  .card-footer{
+    padding: 20px 0 0;
+  }
+
+  .table-img{
+    width: 80px;
+    height: 80px;
+    margin: 0 auto;
+    position: relative;
+  }
+</style>
+<style>
+  .table-wrapper .cell{
+    text-align: center;
+  }
+
+  .table-wrapper .grey-background{
+    background: #dcdcdc;
+    color: #4a4a4a;
+  }
+</style>

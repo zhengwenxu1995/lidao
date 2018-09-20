@@ -1,0 +1,260 @@
+<template>
+  <div class="activation-code">
+    <el-row :gutter="10">
+      <el-col :span="6">
+        <el-card class="btn-box" shadow = 'never'>
+          <btns :btns = 'activeBtns'
+          @createActive = 'createActive'
+          @editActive = 'editActive'
+          @delActive = 'delActive'
+          ></btns>
+        </el-card>
+        <el-card class="box-card" shadow = 'never'>
+          <div class="product-head">
+            <span>频道列表</span>
+          </div>
+          <ul class="product-list">
+            <li class="product-item" v-for="(cItem, cIndex) in channelData" :key="cIndex">
+              <p class="pro-title">{{cItem.title}}</p>
+              <p class="pro-desc">{{cItem.title}}</p>
+            </li>
+            <li class="empty-box" v-if="channelData.length <= 0">暂无商品</li>
+          </ul>
+        </el-card>
+      </el-col>
+      <el-col :span="11">
+        <el-card class="btn-box" shadow = 'never'>
+          <btns :btns = 'resourceBtns'
+          @createResource = 'createResource'
+          @delResource = 'delResource'
+          ></btns>
+        </el-card>
+        <el-card class="box-card" shadow = 'never'>
+          <ul class="resource-list clearfix">
+            <li class="resource-item fl" v-for="(rItem, rIndex) in resourceData" :key="rIndex">
+              <div class="resource-img">
+                <img :src="rItem.avatar" alt="" class="img-center">
+              </div>
+              <div class="resource-title text-ellipsis">{{rItem.title}}</div>
+            </li>
+            <li class="empty-box" v-if="resourceData.length <= 0">暂无资源</li>
+          </ul>
+        </el-card>
+      </el-col>
+      <el-col :span="7">
+        <el-card class="box-card" shadow = 'never'>
+          <div class="product-head">
+            <span>详情</span>
+          </div>
+          <div class="table-box">
+            <my-table
+            :config='tableConfig'
+            :tableData='tableData'
+            @handleSizeChange='handleSizeChange'
+            @handleCurrentChange='handleCurrentChange'
+            @getData='getData'></my-table>
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
+  </div>
+</template>
+
+<script>
+import Data from "../test/test.js";
+import selectSearch from "../common/selectSearch/selectSearch";
+import myTable from "../common/table/table";
+import btns from "../common/btns/btns";
+export default {
+  data () {
+    return {
+      selectSearchConfig: {
+        isSearch: true,
+        isSelect: false,
+        isButton: true,
+        btnText: '导出表',
+        searchPlaceholder: '请输入',
+        searchValue: ''
+      },
+      tableConfig: {
+        tableHeaders: [
+          {
+            prop: 'title',
+            label: '产品',
+            width: '300'
+          },
+          {
+            prop: 'author',
+            label: '用户',
+            width: '100'
+          },
+          {
+            prop: 'lastTime',
+            label: '时间',
+            width: '200'
+          }
+        ],
+        requestData: {
+          page: 1,
+          size: 10
+        }
+      },
+      activeBtns: [
+        {
+          title: '新建活动',
+          icon: require('../../assets/images/pd/act-new.png'),
+          clickName: 'createActive'
+        },
+        {
+          title: '编辑活动',
+          icon: require('../../assets/images/pd/act-edit.png'),
+          clickName: 'editActive'
+        },
+        {
+          title: '删除活动',
+          icon: require('../../assets/images/pd/act-dd.png'),
+          clickName: 'delActive'
+        }
+      ],
+      resourceBtns: [
+        {
+          title: '添加',
+          icon: require('../../assets/images/pd/act-add.png'),
+          clickName: 'createResource'
+        },
+        {
+          title: '删除',
+          icon: require('../../assets/images/pd/act-de.png'),
+          clickName: 'delResource'
+        }
+      ],
+      tableData: [],
+      channelData: [],
+      resourceData: []
+    };
+  },
+  created () {
+    this.getData();
+  },
+  methods: {
+    getData () {
+      this.tableData = Data.data.slice(0, 10);
+      this.channelData = Data.data.slice(12, 18);
+      this.resourceData = Data.data.slice(20, 32);
+    },
+    createActive () {
+      console.log('新建活动');
+    },
+    editActive () {
+      console.log('编辑活动');
+    },
+    delActive () {
+      console.log('删除活动');
+    },
+    createResource () {
+      console.log('添加');
+    },
+    delResource () {
+      console.log('删除');
+    },
+    handleSizeChange(val) {
+      console.log(`每页 ${val} 条`);
+    },
+    handleCurrentChange(val) {
+      console.log(`当前页: ${val}`);
+    }
+  },
+  components: {
+    selectSearch,
+    myTable,
+    btns
+  }
+};
+</script>
+
+<style scoped>
+  .table-box{
+    padding-top: 20px;
+  }
+
+  .product-head{
+    margin: -20px -20px 0 -20px;
+    background: #2e8af3;
+    height: 30px;
+    line-height: 30px;
+    font-size: 14px;
+    color: #fff;
+    padding: 0 20px;
+  }
+
+  .product-list{
+    padding-top: 20px;
+  }
+
+  .product-item{
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #dcdcdc;
+  }
+
+  .product-item:last-child{
+    border-bottom: none;
+    margin-bottom: 0;
+  }
+
+  .pro-img{
+    width: 82px;
+    height: 110px;
+    float: left;
+    position: relative;
+  }
+
+  .pro-info{
+    padding-left: 90px;
+  }
+
+  .product-title, .resource-title{
+    margin-top: 6px;
+    font-size: 14px;
+    color: #333;
+  }
+
+  .pro-title{
+    font-weight: bold;
+    font-size: 14px;
+    color: #4a4a4a;
+  }
+
+  .pro-desc{
+    margin-top: 8px;
+    font-size: 12px;
+  }
+
+  .pro-time{
+    font-size: 12px;
+    color: #999;
+    margin-top: 10px;
+  }
+
+  .resource-item{
+    width: 80px;
+    margin: 0 10px 10px;
+    text-align: center;
+  }
+
+  .resource-img{
+    width: 60px;
+    height: 70px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .detail-head{
+    background: #2e8af3;
+    height: 30px;
+    line-height: 30px;
+    font-size: 14px;
+    color: #fff;
+    padding: 0 20px;
+  }
+</style>

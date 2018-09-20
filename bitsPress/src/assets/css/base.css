@@ -1,0 +1,72 @@
+/*重置css*/
+body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, code, form, fieldset, lengend, input, button, textarea, select, p, blockquote, th, td { margin:0; padding: 0;}
+html, body, form, fieldset, p, div, h1, h2, h3, h4, h5, h6 { -webkit-text-size-adjust: none; }
+table { border-collapse: collapse; border-spacing: 0; }
+img { border: 0 none; vertical-align: middle; }
+li { list-style-type: none; }
+caption, th { text-align: left; }
+h1, h2, h3, h4, h5, h6 { font-size: 100%;font-weight:400;font-style: normal;}
+body, input, button, textarea, select { font-family:"Microsoft Yahei",微软雅黑,Helvetica, Arial, sans-serif;}
+button { cursor: pointer; }
+em, cite ,i,b{ font-style: normal; font-weight:normal;}
+a { color: #333;  }
+a:link {text-decoration: none; }
+:focus { outline: none; }
+*{-webkit-text-size-adjust: none; -moz-text-size-adjust: none; -ms-text-size-adjust: none; -o-text-size-adjust: none; text-size-adjust: none;box-sizing:border-box;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;}
+::-webkit-scrollbar {width:0; height:0;}  /*滚动条样式*/
+::-ms-clear {display:none;}
+::-ms-reveal {display:none;}
+input,button{ border:none;outline:medium;}
+html{-webkit-tap-highlight-color:transparent;}  /*去除点击页面中元素时出现的阴影*/
+html,body {background-color: #fff;width:100%;height: 100%; font-size: 12px;}
+body {-webkit-text-size-adjust: none;-webkit-touch-callout: none;-webkit-user-select: none;}
+table{-webkit-user-select: text;}
+/* 公共样式 */
+html{height: 100%;}
+
+body{
+	min-width: 1300px;
+	height: 100%;
+}
+
+.el-container{
+	height: 100%;
+}
+
+.el-main{
+	height: 100%;
+	padding: 0;
+	overflow: hidden;
+}
+
+.el-menu--collapse .el-menu-item span, .el-menu--collapse .el-submenu .el-submenu__title span{
+	height: 0;
+	width: 0;
+	overflow: hidden;
+	visibility: hidden;
+	display: inline-block;
+}
+
+.el-menu--collapse .el-menu-item .el-submenu__icon-arrow, .el-menu--collapse .el-submenu .el-submenu__title .el-submenu__icon-arrow{
+	display: none;
+}
+
+.empty-box{
+	text-align: center;
+	margin: 50px 0;
+	font-size: 14px;
+	color: #666;
+}
+
+.el-tabs--border-card{
+	box-shadow: none;
+	border: none;
+}
+
+.btn-box{
+	margin-bottom: 16px;
+	position: sticky;
+	top: 0;
+	left: 0;
+	z-index: 20;
+}

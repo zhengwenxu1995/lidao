@@ -1,0 +1,123 @@
+<template>
+  <div class="behavior-page">
+    <el-card class="btn-box" shadow = 'never'>
+      <btns :btns = 'behaviorBtns'
+      @createBehavior = 'createBehavior'
+      @editBehavior = 'editBehavior'
+      @delBehavior = 'delBehavior'
+      ></btns>
+    </el-card>
+    <el-card class="box-card" shadow = 'never'>
+      <my-table
+        :config='tableConfig'
+        :tableData='tableData'
+        @handleSizeChange='handleSizeChange'
+        @handleCurrentChange='handleCurrentChange'
+        @getData='getData'></my-table>
+    </el-card>
+  </div>
+</template>
+
+<script>
+import Data from "../test/test.js";
+import myTable from "../common/table/table";
+import btns from "../common/btns/btns";
+export default {
+  data () {
+    return {
+      tableConfig: {
+        tableHeaders: [
+          {
+            fixed: true,
+            prop: 'reply',
+            label: '关注数',
+            width: '150'
+          },
+          {
+            prop: 'title',
+            label: '标题',
+            width: '300'
+          },
+          {
+            prop: 'href',
+            label: '图片',
+            width: '100',
+            isTemplate: true
+          },
+          {
+            prop: 'click',
+            label: '点击量',
+            width: '100'
+          },
+          {
+            fixed: true,
+            prop: 'author',
+            label: '创建者',
+            width: '100'
+          },
+          {
+            prop: 'avatar',
+            label: '头像',
+            width: '100',
+            isTemplate: true
+          },
+          {
+            prop: 'lastTime',
+            label: '最后登录时间',
+            width: '200'
+          }
+        ],
+        requestData: {
+          page: 1,
+          size: 10
+        }
+      },
+      tableData: [],
+      behaviorBtns: [
+        {
+          title: '新建行为',
+          icon: require('../../assets/images/common/icon/ag-add.png'),
+          clickName: 'createBehavior'
+        },
+        {
+          title: '编辑行为',
+          icon: require('../../assets/images/common/icon/ag-edit.png'),
+          clickName: 'editBehavior'
+        },
+        {
+          title: '删除行为',
+          icon: require('../../assets/images/common/icon/ag-dele.png'),
+          clickName: 'delBehavior'
+        }
+      ]
+    };
+  },
+  methods: {
+    getData () {
+      this.tableData = Data.data.slice(0, 10);
+    },
+    createBehavior () {
+      console.log('新建行为');
+    },
+    editBehavior () {
+      console.log('编辑行为');
+    },
+    delBehavior () {
+      console.log('删除行为');
+    },
+    handleSizeChange(val) {
+      console.log(`每页 ${val} 条`);
+    },
+    handleCurrentChange(val) {
+      console.log(`当前页: ${val}`);
+    }
+  },
+  components: {
+    myTable,
+    btns
+  }
+};
+</script>
+
+<style scoped>
+</style>

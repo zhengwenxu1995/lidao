@@ -1,0 +1,59 @@
+.hide{
+	display:none!important;
+}
+
+.no-padding{
+	padding: 0!important;
+}
+
+.no-margin{
+	margin: 0;
+}
+
+.fl{
+	float:left;
+}
+
+.fr{
+	float:right;
+}
+
+.text-ellipsis{
+  overflow: hidden;
+  text-overflow:ellipsis;
+  white-space: nowrap;
+  word-wrap: break-word;
+}
+
+.img-center{
+	position: absolute;
+	left: 0;
+	top: 0;
+	bottom: 0;
+	right: 0;
+	margin: auto;
+	max-width: 100%;
+	max-height: 100%;
+}
+
+.clearfix:before,.clearfix:after {
+	display: table;
+	content: "";
+}
+
+.clearfix:after {
+	content: "";
+	display: block;;
+	line-height: 0;
+	height: 0;
+	visibility: hidden;
+	clear: both;
+}
+
+.tc{
+	text-align: center;
+}
+
+.animate-move{
+	transition: all .3s ease-in-out;
+}
